@@ -3,6 +3,7 @@ import * as React from 'react';
 import { SearchResultProps } from '.';
 import RepoResultItemDesktopTablet from '../repoResultItem/RepoResultItemDesktopTablet';
 import { Typography } from '@material-ui/core';
+import { rangeArray } from '../../utils';
 
 const Section = styled.section`
   padding: 20px 30px;
@@ -17,35 +18,22 @@ const SearchResultDesktopTablet: React.FunctionComponent<SearchResultProps> = (p
 
   return <Section role="list">
     {
-      result ?
-        result.length === 0 ?
-          <Typography>
-            No matching result found
-          </Typography>
-          :
-          result.map(item => <ItemWrapper key={item.id}>
-            <RepoResultItemDesktopTablet data={item} />
+      fetching ?
+        rangeArray(5).map(i =>
+          <ItemWrapper key={i}>
+            <RepoResultItemDesktopTablet />
           </ItemWrapper>)
-        : <></>
-    }
-    {
-      fetching && <>
-        <ItemWrapper>
-          <RepoResultItemDesktopTablet />
-        </ItemWrapper>
-        <ItemWrapper>
-          <RepoResultItemDesktopTablet />
-        </ItemWrapper>
-        <ItemWrapper>
-          <RepoResultItemDesktopTablet />
-        </ItemWrapper>
-        <ItemWrapper>
-          <RepoResultItemDesktopTablet />
-        </ItemWrapper>
-        <ItemWrapper>
-          <RepoResultItemDesktopTablet />
-        </ItemWrapper>
-      </>
+        : result ?
+          result.length === 0 ?
+            <Typography>
+              No matching result found
+            </Typography>
+            :
+            result.map(item => <ItemWrapper key={item.id}>
+              <RepoResultItemDesktopTablet data={item} />
+            </ItemWrapper>)
+          : <></>
+
     }
   </Section>;
 };

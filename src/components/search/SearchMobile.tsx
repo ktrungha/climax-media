@@ -10,6 +10,11 @@ const SearchMobile: React.FunctionComponent<SearchProps> = props => {
   const { performSearch, result, fetching, search } = props;
   const [pendingSearch, setPendingSearch] = React.useState(search || '');
 
+  const submitHandler = React.useCallback(e => {
+    e.preventDefault();
+    performSearch(pendingSearch);
+  }, [performSearch, pendingSearch])
+
   return <Container>
     <section>
       <form className={css`
@@ -18,10 +23,7 @@ const SearchMobile: React.FunctionComponent<SearchProps> = props => {
       border-bottom: 1px solid ${LIGHT_GREY};
       align-items: center;
     `}
-        onSubmit={e => {
-          e.preventDefault();
-          performSearch(pendingSearch);
-        }}>
+        onSubmit={submitHandler}>
         <div style={{ flex: 1 }}>
           <TextField inputProps={{ role: 'textbox ' }} label='Search' fullWidth value={pendingSearch} onChange={(e) => setPendingSearch(e.target.value)} />
         </div>
@@ -30,7 +32,7 @@ const SearchMobile: React.FunctionComponent<SearchProps> = props => {
         </Button>
       </form>
     </section>
-    <SearchResultMobile fetching={fetching} result={result}/>
+    <SearchResultMobile fetching={fetching} result={result} />
   </Container>;
 };
 

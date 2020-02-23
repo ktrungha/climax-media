@@ -20,30 +20,63 @@ describe('<App />', () => {
       expect(items.length).toBe(0);
     }
 
-    const searchStr = 'asdf';
-    const searchInput = queries.getByRole('textbox')
-    fireEvent.change(searchInput, { target: { value: searchStr } });
-    fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`, mock);
-
-    fireEvent.click(queries.getByRole('button'));
-
-    // should see 5 loading items
+    // first search
     {
-      const items = queries.getAllByRole('listitem');
-      expect(items.length).toBe(5);
+      const searchStr = 'asdf';
+      const searchInput = queries.getByRole('textbox')
+      fireEvent.change(searchInput, { target: { value: searchStr } });
+      fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`, mock);
+
+      fireEvent.click(queries.getByRole('button'));
+
+      // should see 5 loading items
+      {
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(5);
+      }
+
+      // after waiting for API response. Should see the name of the first repo
+      {
+        await queries.findAllByText('asdf');
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(mock.items.length);
+
+        const firstItem = within(items[0]);
+        firstItem.getByText('Stars: 6766');
+        firstItem.getByText('Forks: 314');
+        firstItem.getByText('asdf-vm');
+        firstItem.getByText('asdf');
+      }
     }
 
-    // after waiting for API response. Should see the name of the first repo
+    // second search
     {
-      await queries.findAllByText('asdf');
-      const items = queries.getAllByRole('listitem');
-      expect(items.length).toBe(mock.items.length);
+      const searchStr = 'second';
+      const searchInput = queries.getByRole('textbox')
+      fireEvent.change(searchInput, { target: { value: searchStr } });
+      fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`, mock,
+        { overwriteRoutes: true });
 
-      const firstItem = within(items[0]);
-      firstItem.getByText('Stars: 6766');
-      firstItem.getByText('Forks: 314');
-      firstItem.getByText('asdf-vm');
-      firstItem.getByText('asdf');
+      fireEvent.click(queries.getByRole('button'));
+
+      // should see 5 loading items
+      {
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(5);
+      }
+
+      // after waiting for API response. Should see the name of the first repo
+      {
+        await queries.findAllByText('asdf');
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(mock.items.length);
+
+        const firstItem = within(items[0]);
+        firstItem.getByText('Stars: 6766');
+        firstItem.getByText('Forks: 314');
+        firstItem.getByText('asdf-vm');
+        firstItem.getByText('asdf');
+      }
     }
   })
 
@@ -109,35 +142,72 @@ describe('<App />', () => {
       expect(items.length).toBe(0);
     }
 
-    const searchStr = 'asdf';
-    const searchInput = queries.getByRole('textbox')
-    fireEvent.change(searchInput, { target: { value: searchStr } });
-    fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`,
-      mock, { overwriteRoutes: true });
-
-    fireEvent.click(queries.getByRole('button'));
-
-    // should see 5 loading items
+    // first search
     {
-      const items = queries.getAllByRole('listitem');
-      expect(items.length).toBe(5);
+      const searchStr = 'asdf';
+      const searchInput = queries.getByRole('textbox')
+      fireEvent.change(searchInput, { target: { value: searchStr } });
+      fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`,
+        mock, { overwriteRoutes: true });
+
+      fireEvent.click(queries.getByRole('button'));
+
+      // should see 5 loading items
+      {
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(5);
+      }
+
+      // after waiting for API response. Should see the name of the first repo
+      {
+        await queries.findAllByText('asdf');
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(mock.items.length);
+
+        const firstItem = within(items[0]);
+        // desktop version should see avatar
+        expect(firstItem.getByAltText('avatar').getAttribute('src')).toEqual('https://avatars2.githubusercontent.com/u/17869024?v=4');
+        firstItem.getByText('Stars: 6766');
+        firstItem.getByText('Forks: 314');
+        firstItem.getByText('asdf-vm');
+        firstItem.getByText('asdf');
+        // desktop version should see description
+        firstItem.getByText('Extendable version manager with support for', { exact: false });
+      }
     }
 
-    // after waiting for API response. Should see the name of the first repo
+    // second search
     {
-      await queries.findAllByText('asdf');
-      const items = queries.getAllByRole('listitem');
-      expect(items.length).toBe(mock.items.length);
+      const searchStr = 'second';
+      const searchInput = queries.getByRole('textbox')
+      fireEvent.change(searchInput, { target: { value: searchStr } });
+      fetchMock.getOnce(`https://api.github.com/search/repositories?q=${searchStr}&sort=stars&order=desc`,
+        mock, { overwriteRoutes: true });
 
-      const firstItem = within(items[0]);
-      // desktop version should see avatar
-      expect(firstItem.getByAltText('avatar').getAttribute('src')).toEqual('https://avatars2.githubusercontent.com/u/17869024?v=4');
-      firstItem.getByText('Stars: 6766');
-      firstItem.getByText('Forks: 314');
-      firstItem.getByText('asdf-vm');
-      firstItem.getByText('asdf');
-      // desktop version should see description
-      firstItem.getByText('Extendable version manager with support for', { exact: false });
+      fireEvent.click(queries.getByRole('button'));
+
+      // should see 5 loading items
+      {
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(5);
+      }
+
+      // after waiting for API response. Should see the name of the first repo
+      {
+        await queries.findAllByText('asdf');
+        const items = queries.getAllByRole('listitem');
+        expect(items.length).toBe(mock.items.length);
+
+        const firstItem = within(items[0]);
+        // desktop version should see avatar
+        expect(firstItem.getByAltText('avatar').getAttribute('src')).toEqual('https://avatars2.githubusercontent.com/u/17869024?v=4');
+        firstItem.getByText('Stars: 6766');
+        firstItem.getByText('Forks: 314');
+        firstItem.getByText('asdf-vm');
+        firstItem.getByText('asdf');
+        // desktop version should see description
+        firstItem.getByText('Extendable version manager with support for', { exact: false });
+      }
     }
   })
 

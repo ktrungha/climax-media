@@ -10,6 +10,7 @@ const NumberDiv = styled.div`
 
 const Row = styled.div`
   margin-bottom: 15px;
+  padding: 0 10px;
   :last-child {
     margin-bottom: 0;
   };
@@ -22,8 +23,8 @@ const Layout: React.FC<{
   name: React.ReactNode
 }> = props => {
   const { owner, stars, forks, name } = props;
-  return <div style={{padding: '10px'}}>
-    <Row>
+  return <div style={{ padding: '10px' }}>
+    <Row style={{ overflow: 'hidden' }}>
       {owner}
     </Row>
     <Row style={{ display: 'flex' }}>
@@ -38,7 +39,7 @@ const Layout: React.FC<{
         }
       </NumberDiv>
     </Row>
-    <Row>
+    <Row style={{ overflow: 'hidden' }}>
       {
         name
       }
@@ -52,16 +53,16 @@ const RepoResultItemMobile: React.FunctionComponent<RepoResultItemProps> = (prop
     {
       data ?
         <Layout
-          owner={<Typography variant="h6">{data.owner.login}</Typography>}
+          owner={<Typography noWrap variant="h6">{data.owner.login}</Typography>}
           stars={<Typography variant="subtitle2">Stars: {data.stargazers_count}</Typography>}
           forks={<Typography variant="subtitle2">Forks: {data.forks}</Typography>}
-          name={<Typography variant="h6">{data.name}</Typography>}
+          name={<Typography noWrap variant="h6">{data.name}</Typography>}
         />
         :
         <Layout
           owner={<Skeleton width="90px" />}
-          stars={<Skeleton width="90px" />}
-          forks={<Skeleton width="90px" />}
+          stars={<Skeleton width="50px" />}
+          forks={<Skeleton width="50px" />}
           name={<Skeleton width="150px" />}
         />
     }
